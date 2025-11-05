@@ -48,11 +48,34 @@ add_action('after_setup_theme', 'melbournemarketplace_setup');
 function melbournemarketplace_scripts() {
     // Enqueue main stylesheet
     wp_enqueue_style('melbournemarketplace-style', get_stylesheet_uri(), array(), '1.0');
-    
+
     // Enqueue custom JavaScript if needed
     wp_enqueue_script('melbournemarketplace-script', get_template_directory_uri() . '/js/main.js', array('jquery'), '1.0', true);
+
+    // Hand-crafted/comic fonts
+    wp_enqueue_style(
+        'melbournemarketplace-fonts',
+        'https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Patrick+Hand&display=swap',
+        array(),
+        null
+    );
 }
 add_action('wp_enqueue_scripts', 'melbournemarketplace_scripts');
+
+/**
+ * Fallback menu when no custom menu is assigned
+ */
+function melbournemarketplace_default_menu() {
+    echo '<ul id="primary-menu" class="menu">';
+    echo '<li><a href="' . esc_url(home_url('/')) . '">' . esc_html__('Home', 'melbournemarketplace') . '</a></li>';
+    if (function_exists('wc_get_page_id')) {
+        $shop_id = wc_get_page_id('shop');
+        if ($shop_id && $shop_id > 0) {
+            echo '<li><a href="' . esc_url(get_permalink($shop_id)) . '">' . esc_html__('Shop', 'melbournemarketplace') . '</a></li>';
+        }
+    }
+    echo '</ul>';
+}
 
 /**
  * Custom WooCommerce Product Categories Display
@@ -217,3 +240,57 @@ function melbournemarketplace_body_classes($classes) {
     return $classes;
 }
 add_filter('body_class', 'melbournemarketplace_body_classes');
+
+/**
+ * Customizer settings: Homepage Hero
+ */
+function melbournemarketplace_customize_register($wp_customize) {
+    // Section
+    $wp_customize->add_section('mm_hero_section', array(
+        'title'       => __('Homepage Hero', 'melbournemarketplace'),
+        'priority'    => 30,
+        'description' => __('Customize the hero area on the homepage.', 'melbournemarketplace'),
+    ));
+
+    // Hero Image
+    $wp_customize->add_setting('mm_hero_image', array(
+        'type'              => 'theme_mod',
+        'sanitize_callback' => 'esc_url_raw',
+        'transport'         => 'refresh',
+    ));
+
+    $wp_customize->add_control(new WP_Customize_Image_Control($wp_customize, 'mm_hero_image', array(
+        'label'    => __('Hero Background Image', 'melbournemarketplace'),
+        'section'  => 'mm_hero_section',
+        'settings' => 'mm_hero_image',
+    )));
+
+    // Hero Title
+    $wp_customize->add_setting('mm_hero_title', array(
+        'type'              => 'theme_mod',
+        'sanitize_callback' => 'sanitize_text_field',
+        'transport'         => 'refresh',
+        'default'           => '',
+    ));
+
+    $wp_customize->add_control('mm_hero_title', array(
+        'label'   => __('Hero Title', 'melbournemarketplace'),
+        'type'    => 'text',
+        'section' => 'mm_hero_section',
+    ));
+
+    // Hero Subtitle
+    $wp_customize->add_setting('mm_hero_subtitle', array(
+        'type'              => 'theme_mod',
+        'sanitize_callback' => 'sanitize_textarea_field',
+        'transport'         => 'refresh',
+        'default'           => '',
+    ));
+
+    $wp_customize->add_control('mm_hero_subtitle', array(
+        'label'   => __('Hero Subtitle', 'melbournemarketplace'),
+        'type'    => 'textarea',
+        'section' => 'mm_hero_section',
+    ));
+}
+add_action('customize_register', 'melbournemarketplace_customize_register');
