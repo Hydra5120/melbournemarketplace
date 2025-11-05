@@ -41,7 +41,7 @@
                 ));
                 ?>
                 
-                <?php if (function_exists('WC')) : ?>
+                <?php if (function_exists('WC') && WC()->cart) : ?>
                     <div class="header-cart">
                         <a href="<?php echo wc_get_cart_url(); ?>" class="cart-link">
                             <span class="cart-icon">🛒</span>
@@ -50,6 +50,10 @@
                     </div>
                 <?php endif; ?>
             </nav>
+            <button class="menu-toggle" aria-controls="primary-menu" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="hamburger" aria-hidden="true"></span>
+                <span class="sr-only">Menu</span>
+            </button>
         </div>
     </header>
 
