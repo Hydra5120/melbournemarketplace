@@ -117,9 +117,6 @@ This theme was developed as part of learning WordPress theme development and Woo
 - GitHub: [@Hydra5120](https://github.com/Hydra5120)
 - Email: dakshnair2003@gmail.com
 
-## License
-
-This project is licensed under the GNU General Public License v2 or later.
 
 ## Acknowledgments
 
